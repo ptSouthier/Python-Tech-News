@@ -50,7 +50,7 @@ def scrape_noticia(html_content):
     shares_count = selector.css(".tec--toolbar__item::text").get()
     comments_count = selector.css("#js-comments-btn::attr(data-count)").get()
     summary_array = selector.css(
-        ".tec--article__body p:first-child *::text"
+        ".tec--article__body > p:first-child *::text"
     ).getall()
     summary = "".join(summary_array)
 
