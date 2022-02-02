@@ -29,9 +29,56 @@ def scrape_next_page_link(html_content):
     return next_page_url
 
 
+def get_writer(selector):
+    writer = selector.css(".tec--author__info p:first-child *::text").get()
+
+    if writer is None:
+        writer = selector.css(".tec--timestamp__item a::text").get()
+
+    return writer
+
+
 # Requisito 4
 def scrape_noticia(html_content):
-    """Seu código deve vir aqui"""
+    selector = Selector(text=html_content)
+
+    url = selector.xpath("//link[contains(@rel, 'canonical')]/@href").get()
+    title = selector.css(".tec--article__header__title::text").get()
+    timestamp = selector.css(".tec--timestamp time::attr(datetime)").get()
+    writer = get_writer(selector)
+    shares_count = selector.css(".tec--toolbar__item::text").get()
+    comments_count = selector.css("#js-comments-btn::attr(data-count)").get()
+    summary_array = selector.css(
+        ".tec--article__body p:first-child *::text"
+    ).getall()
+    summary = "".join(summary_array)
+
+    sources = []
+    for source in selector.css(".z--mb-16 div a::text").getall():
+        sources.append(source.strip())
+    categories = []
+    for category in selector.css("#js-categories a::text").getall():
+        categories.append(category.strip())
+
+    if writer is not None:
+        writer = writer.strip()
+
+    if shares_count is None:
+        shares_count = 0
+    else:
+        shares_count = shares_count[1:3]
+
+    return {
+        "url": url,
+        "title": title,
+        "timestamp": timestamp,
+        "writer": writer,
+        "shares_count": int(shares_count),
+        "comments_count": int(comments_count),
+        "summary": summary,
+        "sources": sources,
+        "categories": categories,
+    }
 
 
 # Requisito 5
