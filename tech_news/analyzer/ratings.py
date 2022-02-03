@@ -5,6 +5,10 @@ def popularity_key(e):
     return e["popularity"]
 
 
+def count_key(e):
+    return e["count"]
+
+
 # Requisito 10
 def top_5_news():
     news_dict_list = []
@@ -26,4 +30,22 @@ def top_5_news():
 
 # Requisito 11
 def top_5_categories():
-    """Seu código deve vir aqui"""
+    categories_list = []
+    categories_count_list = []
+    top_categories = []
+
+    for news in find_news():
+        categories_list.extend([*news["categories"]])
+
+    for category in categories_list:
+        categories_count_list.append({
+            "category": category,
+            "count": categories_list.count(category)
+        })
+
+    categories_count_list.sort(reverse=True, key=count_key)
+
+    for top_category in categories_count_list:
+        top_categories.append(top_category["category"])
+
+    return sorted(top_categories)[:5]
